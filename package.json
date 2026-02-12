@@ -1,0 +1,13 @@
+{
+  "name": "hexapawn",
+  "version": "1.0.0",
+  "description": "HexaPawn — a 3x3 pawn game with matchbox-style learning AI",
+  "type": "module",
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "devDependencies": {
+    "vitest": "^3.0.0"
+  }
+}

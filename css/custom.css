@@ -1,0 +1,19 @@
+/* HexaPawn — Game-specific styles beyond Tailwind */
+
+/* ── Custom colour: Emerald-150 (from style guide) ───────────── */
+.bg-emerald-150 { background-color: #D1FAE5; }
+.text-emerald-150 { color: #D1FAE5; }
+.border-emerald-150 { border-color: #D1FAE5; }
+
+/* ── Game-specific style mappings ────────────────────────────────
+   Maps style guide tokens to HexaPawn-specific UI elements.
+   See style-guide.md for the generic definitions.
+   ────────────────────────────────────────────────────────────── */
+
+/* Board */
+/* Board colours, square sizes, piece sizing, and grid specifics
+   will be defined here when Phase 2 (rendering) is built.       */
+
+/* Pieces */
+/* Selected state, capture animation, movement transitions
+   will be defined here when Phase 4 (polish) is built.          */
