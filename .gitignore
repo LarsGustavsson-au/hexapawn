@@ -4,5 +4,6 @@ Thumbs.db
 *.log
 .env
 nimbalyst-local/
+.claude/
 docs/*.jpg
 docs/*.png

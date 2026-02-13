@@ -11,9 +11,90 @@
    ────────────────────────────────────────────────────────────── */
 
 /* Board */
-/* Board colours, square sizes, piece sizing, and grid specifics
-   will be defined here when Phase 2 (rendering) is built.       */
+
+.board-grid {
+  display: inline-flex;
+  flex-direction: column;
+  border: 3px solid #27272A;    /* Zinc-800 */
+  border-radius: 0.5rem;
+  overflow: hidden;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+              0 2px 4px -2px rgba(0, 0, 0, 0.1);
+}
+
+.board-row {
+  display: flex;
+}
+
+.board-square {
+  width: 100px;
+  height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  cursor: pointer;
+  transition: background-color 150ms ease-in-out;
+}
+
+/* Alternating square colours — White and Emerald-150 */
+.square-light {
+  background-color: #FFFFFF;
+}
+
+.square-dark {
+  background-color: #D1FAE5;    /* Emerald-150 */
+}
+
+/* Selected piece highlight */
+.square-selected {
+  outline: 3px solid #047857;   /* Emerald-700 */
+  outline-offset: -3px;
+  background-color: #A7F3D0 !important;  /* Emerald-200 — slightly stronger */
+}
+
+/* Legal move destination indicator */
+.square-legal-move::after {
+  content: '';
+  position: absolute;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background-color: rgba(4, 120, 87, 0.3);  /* Emerald-700 at 30% */
+}
+
+/* Legal move on occupied square (capture) — ring instead of dot */
+.square-legal-move:has([data-piece])::after {
+  width: 90%;
+  height: 90%;
+  background-color: transparent;
+  border: 3px solid rgba(4, 120, 87, 0.4);
+}
 
 /* Pieces */
+
+.board-piece {
+  width: 70%;
+  height: 70%;
+  pointer-events: none;         /* Clicks go through to square */
+  user-select: none;
+}
+
 /* Selected state, capture animation, movement transitions
    will be defined here when Phase 4 (polish) is built.          */
+
+/* ── Responsive ──────────────────────────────────────────────── */
+
+@media (max-width: 400px) {
+  .board-square {
+    width: 80px;
+    height: 80px;
+  }
+}
+
+@media (max-width: 320px) {
+  .board-square {
+    width: 66px;
+    height: 66px;
+  }
+}

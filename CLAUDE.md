@@ -77,9 +77,15 @@ See [style-guide.md](./style-guide.md)
   3. The opponent has no legal moves
 
 ## Running the Project
-- Open `index.html` in a browser (no server needed for basic development)
+- **Local server required**: ES modules don't work with `file://` — run `npx serve .` from project root, then open `http://localhost:3000`
 - Run tests: `npx vitest run` from project root
 - Run tests in watch mode: `npx vitest` from project root
+
+## Working with Lars
+- Lars is a product manager, not a developer. Can read code but isn't deep in modern tooling.
+- Don't assume familiarity with npm, module systems, CORS, etc. — explain when relevant.
+- When something needs a terminal command, offer to run it rather than just listing the command.
+- Keep explanations practical and jargon-light.
 
 ## Git Conventions
 - Commit messages: `type: description` (feat, fix, refactor, test, docs, chore)

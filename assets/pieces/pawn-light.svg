@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
+  <!-- Light pawn: Emerald-150 light fill, Zinc-800 outline -->
+  <!-- 1970s chess book style: bold outline, clean geometric shape -->
+  <g fill="#D1FAE5" stroke="#27272A" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+    <!-- Base pedestal -->
+    <rect x="20" y="84" width="60" height="8" rx="3" />
+    <!-- Base flare -->
+    <path d="M28 84 Q30 74 34 72 L66 72 Q70 74 72 84 Z" />
+    <!-- Body / column -->
+    <path d="M36 72 Q34 55 38 44 L62 44 Q66 55 64 72 Z" />
+    <!-- Collar ring -->
+    <ellipse cx="50" cy="44" rx="16" ry="5" />
+    <!-- Neck -->
+    <rect x="42" y="32" width="16" height="14" rx="4" />
+    <!-- Head sphere -->
+    <circle cx="50" cy="24" r="14" />
+  </g>
+</svg>
