@@ -52,6 +52,7 @@ font-semibold
 px-6 py-2.5
 rounded-lg
 border-none
+shadow
 transition-colors duration-150
 cursor-pointer
 ```
@@ -64,6 +65,7 @@ font-semibold
 px-6 py-2.5
 rounded-lg
 border-2 border-emerald-700
+shadow
 transition-colors duration-150
 cursor-pointer
 ```
@@ -100,16 +102,24 @@ px-6 py-3
 border border-zinc-100
 ```
 
-### Card Prominent
+### Card Prominent (Dialogs & Modals)
 High-emphasis container for focused content (e.g. dialogs, overlays).
 ```
 bg-white
 rounded-xl
 shadow-lg
-p-8
+pt-4 px-5 pb-6
 max-w-sm mx-auto
 border border-zinc-100
+text-left
 ```
+
+Modals use a full-width divider (`<hr>`) between the title and body content. The divider bleeds to the card edges using negative horizontal margins:
+```
+<hr class="-mx-5 border-zinc-300 mb-4">
+```
+
+In stacked button layouts, the primary button goes on top.
 
 ---
 

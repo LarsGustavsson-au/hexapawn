@@ -128,3 +128,15 @@ export function checkForWinner(board, currentPlayer = null) {
 
   return null;
 }
+
+export function getWinReason(board, currentPlayer = null) {
+  if (hasPawnOnOppositeEnd(board, HUMAN)) return 'promotion';
+  if (hasPawnOnOppositeEnd(board, COMPUTER)) return 'promotion';
+  if (!hasPawnsOnBoard(board, HUMAN)) return 'capture';
+  if (!hasPawnsOnBoard(board, COMPUTER)) return 'capture';
+  if (currentPlayer !== null) {
+    const legalMoves = findAllLegalMoves(board, currentPlayer);
+    if (legalMoves.length === 0) return 'no_moves';
+  }
+  return null;
+}

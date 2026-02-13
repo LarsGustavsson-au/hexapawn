@@ -87,10 +87,24 @@ See [style-guide.md](./style-guide.md)
 - When something needs a terminal command, offer to run it rather than just listing the command.
 - Keep explanations practical and jargon-light.
 
+## Plan Tracking
+- **IMPORTANT: After completing a phase or sub-phase, always update the implementation plan** (`nimbalyst-local/plans/hexapawn-mvp-implementation.md`) by ticking off completed items (`[x]`).
+
+## Versioning
+- Format: `vMAJOR.MINOR.PATCH` (e.g. `v0.1.0`)
+- **Major**: Large-scope changes (e.g. 3D graphics, PvP, database). Resets minor and patch to 0.
+- **Minor**: Feature releases, new functionality. Resets patch to 0.
+- **Patch**: Bug fixes only — no new functionality.
+- Current public version: **v0.1.0** (pre-release, not yet published to GitHub)
+- Git tags use the same `vN.N.N` format.
+- Version is displayed in the UI (upper-right corner).
+- **Before committing, tell the user what the current public version is and suggest whether to step the minor or patch number.**
+
 ## Git Conventions
 - Commit messages: `type: description` (feat, fix, refactor, test, docs, chore)
 - Commit frequently at logical checkpoints
 - Keep commits focused on a single concern
+- Git tags: `vN.N.N` format matching the version number
 - **IMPORTANT: Before any commit, ALWAYS ask the user to manually test the changes in the browser first.** Do not commit until the user confirms it works. Automated tests passing is not enough — the user must verify visually and interactively.
 
 ## Style References
