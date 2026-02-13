@@ -1,6 +1,6 @@
-# HexaPawn — Copy Style Guide
+# Copy Guideline
 
-This document defines the language patterns used throughout HexaPawn. All user-facing text should follow these conventions for a consistent voice and tone.
+This document defines the shared language patterns across the product family. All user-facing text should follow these conventions for a consistent voice and tone.
 
 ---
 

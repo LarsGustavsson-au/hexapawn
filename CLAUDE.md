@@ -31,26 +31,19 @@ project-HexaPawn/
 ├── docs/
 │   └── PRD.md              # Product Requirements Document
 ├── style-guide.md          # Visual style guide (shared across product family)
-├── copy-style-guide.md     # Copy style guide (shared across product family)
+├── copy-guideline.md       # Copy guideline (shared across product family)
 ├── CLAUDE.md               # This file
 └── plan.md                 # Implementation plan
 ```
 
 ## Branding & Colours
-| Token             | Hex       | Usage                                      |
-|-------------------|-----------|----------------------------------------------|
-| Emerald-700       | #047857   | Primary/positive. Dark pieces.              |
-| Rose-800          | #9f1239   | Secondary/negative.                         |
-| Emerald-150       | #D1FAE5   | Tertiary. Light pieces.                     |
-| Zinc-800          | #27272A   | Text and dark UI elements (instead of black)|
-| Amber-50          | #FFFBEB   | Page background                             |
-| White             | #FFFFFF   | Card/modal/section backgrounds              |
+See [style-guide.md](./style-guide.md) 
 
 ## Game Design Decisions
 - **Input**: Click-click (select piece, then click destination)
 - **Board orientation**: Always rotated so player's pawns are at the bottom
 - **First move**: Player chooses for game 1, then alternates automatically
-- **Piece style**: 1970s chess book illustration — bold outline SVG pawns. Dark pieces are solid fill, light pieces are outline/light fill
+- **Piece style**: 1970s chess book illustration — bold outline SVG pawns. Dark pieces are solid fill, light pieces are outline/light fill. Design reference image: `docs/ExampleChessPieces.jpg`
 - **Board style**: Clean modern grid with alternating square colours from brand palette
 - **Computer personality**: Subtle dry quips on wins, losses, and interesting game moments
 - **Stats display**: Minimal counter below board — games played, your wins, computer wins
@@ -96,4 +89,4 @@ project-HexaPawn/
 
 ## Style References
 - `style-guide.md` — Visual style guide (colours, typography, buttons, spacing, animations)
-- `copy-style-guide.md` — Copy style guide (voice, tone, headings, button labels, quips, terminology)
+- `copy-guideline.md` — Copy guideline (voice, tone, headings, button labels, quips, terminology)
