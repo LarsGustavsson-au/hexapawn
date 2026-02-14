@@ -1,12 +1,12 @@
 // HexaPawn — Entry point, game controller
 
-import { HUMAN, COMPUTER } from './constants.js';
+import { HUMAN, COMPUTER, AI_INITIAL_WEIGHT } from './constants.js';
 import { createInitialBoard, findAllLegalMoves, executeMove, checkForWinner, getWinReason } from './game.js';
 import { renderBoard, setupBoardClickHandlers } from './board.js';
 import { createMatchboxAI } from './ai.js';
 import {
   showStartScreen, showGameOverScreen,
-  showStatusMessage, renderStats,
+  showStatusMessage, showPlayAgainButton, renderStats,
 } from './ui.js';
 
 // ── State ───────────────────────────────────────────────────────
@@ -18,15 +18,95 @@ let board = null;
 let currentPlayer = null;
 let isGameActive = false;
 let computerMoveHistory = [];  // { board, move } entries for AI learning
+let gameMoveLog = [];          // Full game move log: { player, move }
 
 let firstPlayer = null;        // Who went first this game (for alternating)
 let isFirstGame = true;
+let lastQuip = null;           // Avoid repeating the same quip twice
 
 const stats = {
   gamesPlayed: 0,
   humanWins: 0,
   computerWins: 0,
 };
+
+// ── Quips ───────────────────────────────────────────────────────
+
+const QUIP_POOLS = {
+  // Computer wins with a well-known move (high weight)
+  confident: [
+    'Got you \u2014 again!',
+    'Are you getting tired?',
+    'Just be happy we didn\'t play about money!',
+  ],
+  // Computer wins with a new/untested move (low/initial weight)
+  surprised: [
+    'Ha! I will try that again',
+    'You\'re not so smart after all!',
+    'OK. Now I\'m on to something!',
+  ],
+  // Computer loses to a move it's seen before (already penalized)
+  frustrated: [
+    'Bummer!',
+    'Flaming Galah! Not again',
+    'I see what you did there!',
+  ],
+  // Computer loses to something new (first time encountering this)
+  curious: [
+    'Interesting\u2026',
+    'Pure luck',
+    'I\'ll avoid that next time',
+  ],
+};
+
+function pickQuip(pool) {
+  const quips = QUIP_POOLS[pool];
+  if (!quips || quips.length === 0) return null;
+
+  // Avoid repeating the same quip twice in a row
+  const available = quips.length > 1
+    ? quips.filter(q => q !== lastQuip)
+    : quips;
+
+  const picked = available[Math.floor(Math.random() * available.length)];
+  lastQuip = picked;
+  return picked;
+}
+
+function selectQuip(winner, computerMoves) {
+  if (winner === COMPUTER) {
+    // Check weight BEFORE this game's reward — was this a known winning path?
+    const lastMove = computerMoves[computerMoves.length - 1];
+    if (lastMove) {
+      const weights = ai.getWeightsForBoard(lastMove.board);
+      const moveKey = `${lastMove.move.fromRow},${lastMove.move.fromCol}->${lastMove.move.toRow},${lastMove.move.toCol}`;
+      const weight = weights[moveKey] ?? AI_INITIAL_WEIGHT;
+
+      // Weight above initial means this move was rewarded in a previous game
+      if (weight > AI_INITIAL_WEIGHT) {
+        return pickQuip('confident');
+      }
+      return pickQuip('surprised');
+    }
+    return pickQuip('surprised');
+  }
+
+  // Computer lost — check weight BEFORE this game's penalty
+  if (computerMoves.length > 0) {
+    const lastMove = computerMoves[computerMoves.length - 1];
+    const weights = ai.getWeightsForBoard(lastMove.board);
+    const moveKey = `${lastMove.move.fromRow},${lastMove.move.fromCol}->${lastMove.move.toRow},${lastMove.move.toCol}`;
+    const weight = weights[moveKey] ?? AI_INITIAL_WEIGHT;
+
+    // Weight below initial means this move was already penalized in a previous game
+    if (weight < AI_INITIAL_WEIGHT) {
+      return pickQuip('frustrated');
+    }
+    return pickQuip('curious');
+  }
+
+  return pickQuip('curious');
+}
 
 // ── Game Flow ───────────────────────────────────────────────────
 
@@ -36,6 +116,7 @@ function startGame(whoGoesFirst) {
   firstPlayer = whoGoesFirst;
   isGameActive = true;
   computerMoveHistory = [];
+  gameMoveLog = [];
 
   renderGameView();
 
@@ -65,6 +146,7 @@ function renderGameView() {
 function onHumanMove(move) {
   if (!isGameActive || currentPlayer !== HUMAN) return;
 
+  gameMoveLog.push({ player: HUMAN, move });
   board = executeMove(board, move.fromRow, move.fromCol, move.toRow, move.toCol);
 
   const winner = checkForWinner(board, COMPUTER);
@@ -97,6 +179,7 @@ function doComputerTurn() {
     }
 
     computerMoveHistory.push({ board: boardBeforeMove, move });
+    gameMoveLog.push({ player: COMPUTER, move });
     board = executeMove(board, move.fromRow, move.fromCol, move.toRow, move.toCol);
 
     const winner = checkForWinner(board, HUMAN);
@@ -123,6 +206,9 @@ function describeWinReason(reason, winner) {
 function endGame(winner, nextPlayer) {
   isGameActive = false;
 
+  // Select quip BEFORE learning — so weights reflect prior experience, not this game's result
+  const quip = selectQuip(winner, computerMoveHistory);
+
   // AI learns from this game
   const computerWon = winner === COMPUTER;
   ai.learnFromGame(computerMoveHistory, computerWon);
@@ -142,7 +228,9 @@ function endGame(winner, nextPlayer) {
   // Brief pause so the player can see the final board before the modal
   const message = winner === HUMAN ? 'You win!' : 'Computer wins';
   setTimeout(() => {
-    showGameOverScreen(app, message, reasonText, onPlayAgain);
+    showGameOverScreen(app, message, reasonText, quip, onPlayAgain, () => {
+      showPlayAgainButton(app, onPlayAgain);
+    });
   }, 600);
 }
 

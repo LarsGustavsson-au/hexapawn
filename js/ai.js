@@ -81,5 +81,9 @@ export function createMatchboxAI() {
     return { ...memory[boardKey] };
   }
 
-  return { selectMove, learnFromGame, getWeightsForBoard };
+  function getMemory() {
+    return memory;
+  }
+
+  return { selectMove, learnFromGame, getWeightsForBoard, getMemory };
 }

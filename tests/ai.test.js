@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import {
   HUMAN, COMPUTER, HUMAN_PAWN, COMPUTER_PAWN, EMPTY,
-  AI_INITIAL_WEIGHT, AI_MIN_WEIGHT, AI_MAX_WEIGHT,
+  AI_INITIAL_WEIGHT, AI_MIN_WEIGHT, AI_MAX_WEIGHT, AI_PENALTY_AMOUNT,
 } from '../js/constants.js';
 import { createInitialBoard } from '../js/game.js';
 import { createMatchboxAI } from '../js/ai.js';
@@ -91,7 +91,7 @@ describe('ai.learnFromGame', () => {
     expect(weightsAfter[moveKey]).toBeLessThan(weightsBefore[moveKey]);
   });
 
-  it('should only learn from the last 2 moves', () => {
+  it('should learn from all moves in the game', () => {
     const ai = createMatchboxAI();
 
     // Create 3 different board states
@@ -121,10 +121,11 @@ describe('ai.learnFromGame', () => {
     ];
     ai.learnFromGame(moveHistory, false); // lost
 
-    // Board1 was 3 moves ago — should NOT be penalized (only last 2)
+    // All moves should be penalized (AI learns from all moves in short games)
     const weightsAfter1 = ai.getWeightsForBoard(board1);
     const moveKey1 = '0,1->1,1';
-    expect(weightsAfter1[moveKey1]).toBe(weightsBefore1[moveKey1]);
+    const expected = Math.max(AI_MIN_WEIGHT, weightsBefore1[moveKey1] - AI_PENALTY_AMOUNT);
+    expect(weightsAfter1[moveKey1]).toBe(expected);
   });
 
   it('should never let a weight drop below the minimum', () => {

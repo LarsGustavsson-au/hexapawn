@@ -27,12 +27,12 @@ export const DIRECTION = {
 };
 
 // AI learning parameters
-export const AI_REWARD_AMOUNT = 1;       // Weight added to good moves on win
-export const AI_PENALTY_AMOUNT = 1;      // Weight removed from bad moves on loss
-export const AI_MAX_WEIGHT = 6;          // Maximum weight a move can have (+3 from starting 3)
-export const AI_MIN_WEIGHT = 1;          // Minimum weight (always some chance)
-export const AI_INITIAL_WEIGHT = 3;      // Starting weight for all legal moves
-export const AI_MOVES_TO_LEARN = 2;      // How many of the last moves to reinforce/penalize
+export const AI_REWARD_AMOUNT = 2;       // Weight added to good moves on win
+export const AI_PENALTY_AMOUNT = 5;      // Weight removed from bad moves on loss
+export const AI_MAX_WEIGHT = 15;         // Maximum weight a move can have
+export const AI_MIN_WEIGHT = 1;          // Minimum weight (always some small chance)
+export const AI_INITIAL_WEIGHT = 5;      // Starting weight for all legal moves
+export const AI_MOVES_TO_LEARN = Infinity; // Learn from all computer moves (games are short)
 
 // Brand colours (for JS reference — CSS uses Tailwind classes where possible)
 export const COLOURS = {

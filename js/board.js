@@ -69,10 +69,39 @@ function createSquareElement(dataRow, dataCol, visualRow, visualCol, cell) {
   return square;
 }
 
+// ── Coordinate Labels ────────────────────────────────────────────
+
+const COL_LABELS = ['a', 'b', 'c'];
+
+function visualRowToLabel(visualRow) {
+  // Row 1 at the bottom (player's side), row 3 at the top
+  return String(BOARD_SIZE - visualRow);
+}
+
+function visualColToLabel(visualCol) {
+  return COL_LABELS[visualCol];
+}
+
+/**
+ * Convert a data-coordinate move to a human-readable string like "b1-b2".
+ * Perspective determines how data rows/cols map to visual labels.
+ */
+export function moveToCoord(move, perspective) {
+  const fromVR = perspective === HUMAN ? move.fromRow : (BOARD_SIZE - 1) - move.fromRow;
+  const fromVC = perspective === HUMAN ? move.fromCol : (BOARD_SIZE - 1) - move.fromCol;
+  const toVR = perspective === HUMAN ? move.toRow : (BOARD_SIZE - 1) - move.toRow;
+  const toVC = perspective === HUMAN ? move.toCol : (BOARD_SIZE - 1) - move.toCol;
+  return `${visualColToLabel(fromVC)}${visualRowToLabel(fromVR)}-${visualColToLabel(toVC)}${visualRowToLabel(toVR)}`;
+}
+
 export function renderBoard(container, board, perspective) {
   // Clear existing board content
-  const existingBoard = container.querySelector('.board-grid');
+  const existingBoard = container.querySelector('.board-with-coords');
   if (existingBoard) existingBoard.remove();
+
+  // Wrapper with coordinate labels
+  const wrapper = document.createElement('div');
+  wrapper.classList.add('board-with-coords');
 
   const grid = document.createElement('div');
   grid.classList.add('board-grid');
@@ -93,7 +122,39 @@ export function renderBoard(container, board, perspective) {
     grid.appendChild(rowEl);
   }
 
-  container.appendChild(grid);
+  // Row labels (left side)
+  const rowLabels = document.createElement('div');
+  rowLabels.classList.add('board-row-labels');
+  for (let visualRow = 0; visualRow < BOARD_SIZE; visualRow++) {
+    const label = document.createElement('div');
+    label.classList.add('board-coord-label');
+    label.textContent = visualRowToLabel(visualRow);
+    rowLabels.appendChild(label);
+  }
+
+  // Column labels (bottom)
+  const colLabels = document.createElement('div');
+  colLabels.classList.add('board-col-labels');
+  // Spacer for row-label column
+  const spacer = document.createElement('div');
+  spacer.classList.add('board-coord-spacer');
+  colLabels.appendChild(spacer);
+  for (let visualCol = 0; visualCol < BOARD_SIZE; visualCol++) {
+    const label = document.createElement('div');
+    label.classList.add('board-coord-label-col');
+    label.textContent = visualColToLabel(visualCol);
+    colLabels.appendChild(label);
+  }
+
+  const gridRow = document.createElement('div');
+  gridRow.style.display = 'flex';
+  gridRow.style.alignItems = 'stretch';
+  gridRow.appendChild(rowLabels);
+  gridRow.appendChild(grid);
+
+  wrapper.appendChild(gridRow);
+  wrapper.appendChild(colLabels);
+  container.appendChild(wrapper);
 }
 
 // ── Click Handling ──────────────────────────────────────────────

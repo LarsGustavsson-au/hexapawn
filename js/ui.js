@@ -40,16 +40,21 @@ export function showStartScreen(container, onChoiceSelected) {
 
 // ── Game Over Screen ────────────────────────────────────────────
 
-export function showGameOverScreen(container, message, reason, onPlayAgain) {
+export function showGameOverScreen(container, message, reason, quip, onPlayAgain, onDismiss) {
   const overlay = document.createElement('div');
   overlay.id = 'game-over-screen';
   overlay.className = 'start-overlay';
+
+  const quipHtml = quip
+    ? `<p class="text-sm italic text-zinc-500 mb-6">"${quip}"</p>`
+    : '';
 
   overlay.innerHTML = `
     <div class="start-card bg-white rounded-xl shadow-lg pt-4 px-5 pb-6 max-w-sm mx-auto border border-zinc-100 text-left">
       <h2 class="text-lg font-bold text-zinc-800 mb-3">${message}</h2>
       <hr class="-mx-5 border-zinc-300 mb-4">
-      <p class="text-base text-zinc-800 mb-6">${reason}</p>
+      <p class="text-base text-zinc-800 ${quip ? 'mb-3' : 'mb-6'}">${reason}</p>
+      ${quipHtml}
       <div class="flex flex-col gap-3">
         <button id="btn-play-again"
           class="bg-emerald-700 hover:bg-emerald-800 text-white font-semibold px-6 py-2.5 rounded-lg border-none transition-colors duration-150 cursor-pointer shadow">
@@ -72,6 +77,7 @@ export function showGameOverScreen(container, message, reason, onPlayAgain) {
 
   overlay.querySelector('#btn-dismiss').addEventListener('click', () => {
     overlay.remove();
+    if (onDismiss) onDismiss();
   });
 }
 
@@ -91,6 +97,24 @@ export function showStatusMessage(container, text) {
 export function clearStatusMessage(container) {
   const statusEl = container.querySelector('#status-message');
   if (statusEl) statusEl.textContent = '';
+}
+
+export function showPlayAgainButton(container, onPlayAgain) {
+  let statusEl = container.querySelector('#status-message');
+  if (!statusEl) {
+    statusEl = document.createElement('div');
+    statusEl.id = 'status-message';
+    statusEl.className = 'text-base font-medium text-zinc-800 mt-4';
+    container.appendChild(statusEl);
+  }
+
+  statusEl.innerHTML = '';
+  statusEl.className = 'text-base font-medium text-zinc-800 mt-4 mb-2';
+  const btn = document.createElement('button');
+  btn.textContent = 'Play again';
+  btn.className = 'bg-emerald-700 hover:bg-emerald-800 text-white font-semibold px-6 py-2.5 rounded-lg border-none transition-colors duration-150 cursor-pointer shadow';
+  btn.addEventListener('click', onPlayAgain);
+  statusEl.appendChild(btn);
 }
 
 // ── Stats Display ───────────────────────────────────────────────
