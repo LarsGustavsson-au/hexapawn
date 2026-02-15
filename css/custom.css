@@ -80,8 +80,22 @@
   user-select: none;
 }
 
-/* Selected state, capture animation, movement transitions
-   will be defined here when Phase 4 (polish) is built.          */
+/* Move animation — piece slides from origin to destination */
+.piece-moving {
+  transition: transform 250ms ease-in-out;
+  z-index: 2;
+}
+
+/* Capture animation — piece fades out */
+.piece-captured {
+  animation: fadeOut 200ms ease-in forwards;
+  pointer-events: none;
+}
+
+@keyframes fadeOut {
+  from { opacity: 1; transform: scale(1); }
+  to   { opacity: 0; transform: scale(0.5); }
+}
 
 /* ── Board Coordinate Labels ─────────────────────────────────── */
 

@@ -61,3 +61,4 @@ This document defines the shared language patterns across the product family. Al
 | "capture" | "take", "eat", "kill", "eliminate" |
 | "computer" | "AI", "bot", "opponent", "CPU" |
 | "your" | "player's", "human's" |
+| "Got it" | "OK", "Close", "Dismiss" (for info modal dismiss buttons) |

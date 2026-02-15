@@ -2,7 +2,7 @@
 
 import {
   COMPUTER, AI_INITIAL_WEIGHT, AI_MIN_WEIGHT, AI_MAX_WEIGHT,
-  AI_REWARD_AMOUNT, AI_PENALTY_AMOUNT, AI_MOVES_TO_LEARN,
+  AI_REWARD_AMOUNT, AI_PENALTY_AMOUNT,
 } from './constants.js';
 import { findAllLegalMoves } from './game.js';
 
@@ -44,6 +44,12 @@ export function createMatchboxAI() {
 
     // Weighted random selection
     const totalWeight = Object.values(weights).reduce((sum, w) => sum + w, 0);
+
+    // If all moves have been eliminated (weight 0), pick randomly from legal moves
+    if (totalWeight === 0) {
+      return legalMoves[Math.floor(Math.random() * legalMoves.length)];
+    }
+
     let random = Math.random() * totalWeight;
 
     for (const move of legalMoves) {
@@ -58,20 +64,28 @@ export function createMatchboxAI() {
   }
 
   function learnFromGame(moveHistory, didWin) {
-    // Only learn from the last N moves
-    const movesToLearn = moveHistory.slice(-AI_MOVES_TO_LEARN);
-    const adjustment = didWin ? AI_REWARD_AMOUNT : -AI_PENALTY_AMOUNT;
+    if (didWin) {
+      // Reward all moves that contributed to the win
+      for (const { board, move } of moveHistory) {
+        const boardKey = ensureBoardInMemory(board);
+        const moveKey = serializeMove(move);
+        const weights = memory[boardKey];
 
-    for (const { board, move } of movesToLearn) {
-      const boardKey = ensureBoardInMemory(board);
-      const moveKey = serializeMove(move);
-      const weights = memory[boardKey];
+        if (weights[moveKey] !== undefined) {
+          weights[moveKey] = Math.min(AI_MAX_WEIGHT, weights[moveKey] + AI_REWARD_AMOUNT);
+        }
+      }
+    } else {
+      // Penalize only the last move — the one that directly led to the loss
+      if (moveHistory.length > 0) {
+        const { board, move } = moveHistory[moveHistory.length - 1];
+        const boardKey = ensureBoardInMemory(board);
+        const moveKey = serializeMove(move);
+        const weights = memory[boardKey];
 
-      if (weights[moveKey] !== undefined) {
-        weights[moveKey] = Math.max(
-          AI_MIN_WEIGHT,
-          Math.min(AI_MAX_WEIGHT, weights[moveKey] + adjustment)
-        );
+        if (weights[moveKey] !== undefined) {
+          weights[moveKey] = Math.max(AI_MIN_WEIGHT, weights[moveKey] - AI_PENALTY_AMOUNT);
+        }
       }
     }
   }

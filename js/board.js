@@ -157,6 +157,60 @@ export function renderBoard(container, board, perspective) {
   container.appendChild(wrapper);
 }
 
+// ── Move Animation ─────────────────────────────────────────────
+
+/**
+ * Animate a move on the existing board DOM. Returns a Promise that
+ * resolves when the animation finishes and the DOM has been updated.
+ *
+ * @param {HTMLElement} container - The app container with the board
+ * @param {object} move - { fromRow, fromCol, toRow, toCol } in data coords
+ */
+export function animateMove(container, move) {
+  return new Promise(resolve => {
+    const fromSquare = getSquareAt(container, move.fromRow, move.fromCol);
+    const toSquare = getSquareAt(container, move.toRow, move.toCol);
+    if (!fromSquare || !toSquare) { resolve(); return; }
+
+    const piece = fromSquare.querySelector('.board-piece');
+    if (!piece) { resolve(); return; }
+
+    const capturedPiece = toSquare.querySelector('.board-piece');
+
+    // Calculate pixel offset between squares
+    const fromRect = fromSquare.getBoundingClientRect();
+    const toRect = toSquare.getBoundingClientRect();
+    const dx = toRect.left - fromRect.left;
+    const dy = toRect.top - fromRect.top;
+
+    // Start capture fade-out in parallel
+    if (capturedPiece) {
+      capturedPiece.classList.add('piece-captured');
+    }
+
+    // Slide the moving piece
+    piece.classList.add('piece-moving');
+    piece.style.transform = `translate(${dx}px, ${dy}px)`;
+
+    piece.addEventListener('transitionend', function onEnd() {
+      piece.removeEventListener('transitionend', onEnd);
+      piece.classList.remove('piece-moving');
+      piece.style.transform = '';
+
+      // Move piece to destination square in the DOM
+      if (capturedPiece) capturedPiece.remove();
+      fromSquare.removeChild(piece);
+      toSquare.appendChild(piece);
+
+      // Update data attributes on squares
+      toSquare.dataset.hasPiece = 'true';
+      delete fromSquare.dataset.hasPiece;
+
+      resolve();
+    }, { once: true });
+  });
+}
+
 // ── Click Handling ──────────────────────────────────────────────
 
 function clearHighlights(container) {

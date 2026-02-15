@@ -40,6 +40,32 @@ describe('ai.selectMove', () => {
     expect(move).toBeNull();
   });
 
+  it('should pick a random legal move when all weights are zero', () => {
+    const ai = createMatchboxAI();
+    const board = createInitialBoard();
+
+    // Drive all move weights to zero via repeated losses
+    const moves = [
+      { fromRow: 0, fromCol: 0, toRow: 1, toCol: 0 },
+      { fromRow: 0, fromCol: 1, toRow: 1, toCol: 1 },
+      { fromRow: 0, fromCol: 2, toRow: 1, toCol: 2 },
+    ];
+    for (const move of moves) {
+      for (let i = 0; i < 5; i++) {
+        ai.learnFromGame([{ board, move }], false);
+      }
+    }
+
+    // All weights should be 0
+    const weights = ai.getWeightsForBoard(board);
+    Object.values(weights).forEach(w => expect(w).toBe(0));
+
+    // Should still return a valid move (random fallback)
+    const move = ai.selectMove(board);
+    expect(move).not.toBeNull();
+    expect(move).toHaveProperty('fromRow');
+  });
+
   it('should assign equal initial weights to all legal moves', () => {
     const ai = createMatchboxAI();
     const board = createInitialBoard();
@@ -91,7 +117,7 @@ describe('ai.learnFromGame', () => {
     expect(weightsAfter[moveKey]).toBeLessThan(weightsBefore[moveKey]);
   });
 
-  it('should learn from all moves in the game', () => {
+  it('should only penalize the last move on a loss', () => {
     const ai = createMatchboxAI();
 
     // Create 3 different board states
@@ -113,6 +139,7 @@ describe('ai.learnFromGame', () => {
     ai.selectMove(board3);
 
     const weightsBefore1 = { ...ai.getWeightsForBoard(board1) };
+    const weightsBefore3 = { ...ai.getWeightsForBoard(board3) };
 
     const moveHistory = [
       { board: board1, move: { fromRow: 0, fromCol: 1, toRow: 1, toCol: 1 } },
@@ -121,11 +148,44 @@ describe('ai.learnFromGame', () => {
     ];
     ai.learnFromGame(moveHistory, false); // lost
 
-    // All moves should be penalized (AI learns from all moves in short games)
+    // Only the last move (board3) should be penalized
     const weightsAfter1 = ai.getWeightsForBoard(board1);
-    const moveKey1 = '0,1->1,1';
-    const expected = Math.max(AI_MIN_WEIGHT, weightsBefore1[moveKey1] - AI_PENALTY_AMOUNT);
-    expect(weightsAfter1[moveKey1]).toBe(expected);
+    expect(weightsAfter1['0,1->1,1']).toBe(weightsBefore1['0,1->1,1']); // unchanged
+
+    const weightsAfter3 = ai.getWeightsForBoard(board3);
+    const expected = Math.max(AI_MIN_WEIGHT, weightsBefore3['0,0->1,0'] - AI_PENALTY_AMOUNT);
+    expect(weightsAfter3['0,0->1,0']).toBe(expected); // penalized
+  });
+
+  it('should reward all moves on a win', () => {
+    const ai = createMatchboxAI();
+
+    const board1 = createInitialBoard();
+    const board2 = [
+      [COMPUTER_PAWN, EMPTY,         COMPUTER_PAWN],
+      [EMPTY,         COMPUTER_PAWN, EMPTY        ],
+      [HUMAN_PAWN,    HUMAN_PAWN,    HUMAN_PAWN   ],
+    ];
+
+    ai.selectMove(board1);
+    ai.selectMove(board2);
+
+    const weightsBefore1 = { ...ai.getWeightsForBoard(board1) };
+    const weightsBefore2 = { ...ai.getWeightsForBoard(board2) };
+
+    // Use moves that are actually legal: 0,1->1,1 from board1, 1,1->2,0 (diagonal capture) from board2
+    const moveHistory = [
+      { board: board1, move: { fromRow: 0, fromCol: 1, toRow: 1, toCol: 1 } },
+      { board: board2, move: { fromRow: 1, fromCol: 1, toRow: 2, toCol: 0 } },
+    ];
+    ai.learnFromGame(moveHistory, true); // won
+
+    // Both moves should be rewarded
+    const weightsAfter1 = ai.getWeightsForBoard(board1);
+    expect(weightsAfter1['0,1->1,1']).toBe(weightsBefore1['0,1->1,1'] + 1);
+
+    const weightsAfter2 = ai.getWeightsForBoard(board2);
+    expect(weightsAfter2['1,1->2,0']).toBe(weightsBefore2['1,1->2,0'] + 1);
   });
 
   it('should never let a weight drop below the minimum', () => {

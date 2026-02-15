@@ -2,11 +2,11 @@
 
 import { HUMAN, COMPUTER, AI_INITIAL_WEIGHT } from './constants.js';
 import { createInitialBoard, findAllLegalMoves, executeMove, checkForWinner, getWinReason } from './game.js';
-import { renderBoard, setupBoardClickHandlers } from './board.js';
+import { renderBoard, setupBoardClickHandlers, animateMove } from './board.js';
 import { createMatchboxAI } from './ai.js';
 import {
   showStartScreen, showGameOverScreen,
-  showStatusMessage, showPlayAgainButton, renderStats,
+  showStatusMessage, showPlayAgainButton, renderStats, renderInfoLinks,
 } from './ui.js';
 
 // ── State ───────────────────────────────────────────────────────
@@ -141,10 +141,14 @@ function renderGameView() {
   setupBoardClickHandlers(app, board, HUMAN, onHumanMove);
   showStatusMessage(app, currentPlayer === HUMAN ? 'Your move' : 'Computer is thinking...');
   renderStats(app, stats);
+  renderInfoLinks(app, currentPlayer === COMPUTER);
 }
 
-function onHumanMove(move) {
+async function onHumanMove(move) {
   if (!isGameActive || currentPlayer !== HUMAN) return;
+
+  // Animate the move on the current board, then update state
+  await animateMove(app, move);
 
   gameMoveLog.push({ player: HUMAN, move });
   board = executeMove(board, move.fromRow, move.fromCol, move.toRow, move.toCol);
@@ -166,7 +170,7 @@ function doComputerTurn() {
   showStatusMessage(app, 'Computer is thinking...');
 
   // Brief delay so it doesn't feel instant
-  setTimeout(() => {
+  setTimeout(async () => {
     if (!isGameActive) return;
 
     const boardBeforeMove = board.map(row => [...row]);
@@ -177,6 +181,9 @@ function doComputerTurn() {
       endGame(HUMAN, COMPUTER);
       return;
     }
+
+    // Animate the computer's move on the current board
+    await animateMove(app, move);
 
     computerMoveHistory.push({ board: boardBeforeMove, move });
     gameMoveLog.push({ player: COMPUTER, move });

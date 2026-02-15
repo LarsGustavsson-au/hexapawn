@@ -70,6 +70,21 @@ transition-colors duration-150
 cursor-pointer
 ```
 
+### Dismiss Button
+Acknowledges informational content and closes the current view.
+```
+bg-emerald-700 hover:bg-emerald-800 text-white
+font-semibold
+px-6 py-2.5
+rounded-lg
+border-none
+shadow
+transition-colors duration-150
+cursor-pointer
+w-full
+```
+Label: "Got it"
+
 ### Disabled Button
 Inactive state for any button.
 ```
