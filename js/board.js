@@ -145,12 +145,20 @@ export function renderBoard(container, board, perspective) {
     label.textContent = visualColToLabel(visualCol);
     colLabels.appendChild(label);
   }
+  // Right-side spacer to balance left spacer for horizontal centering
+  const colSpacerRight = document.createElement('div');
+  colSpacerRight.classList.add('board-coord-spacer');
+  colLabels.appendChild(colSpacerRight);
 
   const gridRow = document.createElement('div');
   gridRow.style.display = 'flex';
-  gridRow.style.alignItems = 'stretch';
+  gridRow.style.alignItems = 'flex-start';
   gridRow.appendChild(rowLabels);
   gridRow.appendChild(grid);
+  // Right-side spacer to balance row labels for horizontal centering
+  const gridRowSpacer = document.createElement('div');
+  gridRowSpacer.classList.add('board-coord-spacer');
+  gridRow.appendChild(gridRowSpacer);
 
   wrapper.appendChild(gridRow);
   wrapper.appendChild(colLabels);

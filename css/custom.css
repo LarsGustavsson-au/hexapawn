@@ -198,11 +198,23 @@
     width: 80px;
     height: 80px;
   }
+  .board-coord-label {
+    height: 80px;
+  }
+  .board-coord-label-col {
+    width: 80px;
+  }
 }
 
 @media (max-width: 320px) {
   .board-square {
     width: 66px;
     height: 66px;
+  }
+  .board-coord-label {
+    height: 66px;
+  }
+  .board-coord-label-col {
+    width: 66px;
   }
 }
