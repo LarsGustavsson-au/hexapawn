@@ -49,11 +49,14 @@ See [style-guide.md](./style-guide.md)
 - **Stats display**: Minimal counter below board — games played, your wins, computer wins
 
 ## AI / Learning Model
-- **Start state**: Completely random — all legal moves equally weighted (true matchbox approach)
-- **Learning**: On loss, penalize the computer's last 2 moves. On win, reinforce last 2 moves.
-- **Weight system**: +/-3 experience before a move pattern is fully determined or ruled out
+- **Start state**: Completely random — all legal moves equally weighted at 3 (true matchbox approach)
+- **On loss**: Penalize only the last computer move (-3, fully eliminates it in one loss)
+- **On win**: Reward all computer moves from the game (+1 each)
+- **Weight range**: 0 (eliminated — never played again) to 15 (strongly preferred)
+- **Zero-weight fallback**: If all moves for a board state are at 0, pick randomly from legal moves
 - **Memory**: In-memory only for MVP (resets on page reload)
 - **Learns from**: Computer's own moves only (not the human's moves)
+- **Learning speed**: Noticeable improvement within 5-10 games
 
 ## Coding Standards
 - **TDD approach**: Write a failing test first, then write the code to pass it
@@ -95,7 +98,7 @@ See [style-guide.md](./style-guide.md)
 - **Major**: Large-scope changes (e.g. 3D graphics, PvP, database). Resets minor and patch to 0.
 - **Minor**: Feature releases, new functionality. Resets patch to 0.
 - **Patch**: Bug fixes only — no new functionality.
-- Current public version: **v0.1.0** (pre-release, not yet published to GitHub)
+- Current public version: **v1.0.0** (published to GitHub, deployed on Vercel)
 - Git tags use the same `vN.N.N` format.
 - Version is displayed in the UI (upper-right corner).
 - **Before committing, tell the user what the current public version is and suggest whether to step the minor or patch number.**
