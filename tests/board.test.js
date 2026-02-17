@@ -9,6 +9,7 @@ import {
   renderBoard,
   setupBoardClickHandlers,
 } from '../js/board.js';
+import { renderInfoLinks } from '../js/ui.js';
 
 // ── Helper ──────────────────────────────────────────────────────
 
@@ -223,5 +224,47 @@ describe('setupBoardClickHandlers', () => {
     piece2.click(); // switch to second piece
     expect(piece1.classList.contains('square-selected')).toBe(false);
     expect(piece2.classList.contains('square-selected')).toBe(true);
+  });
+});
+
+// ── Info Links (enabled/disabled state) ─────────────────────────
+
+describe('renderInfoLinks', () => {
+  let container;
+
+  beforeEach(() => {
+    container = setupContainer();
+  });
+
+  it('should render enabled info links when isDisabled is false', () => {
+    renderInfoLinks(container, false);
+    const rules = container.querySelector('.info-link-rules');
+    const about = container.querySelector('.info-link-about');
+    expect(rules).not.toBeNull();
+    expect(about).not.toBeNull();
+    expect(rules.classList.contains('pointer-events-none')).toBe(false);
+    expect(about.classList.contains('pointer-events-none')).toBe(false);
+  });
+
+  it('should render disabled info links when isDisabled is true', () => {
+    renderInfoLinks(container, true);
+    const rules = container.querySelector('.info-link-rules');
+    const about = container.querySelector('.info-link-about');
+    expect(rules.classList.contains('pointer-events-none')).toBe(true);
+    expect(about.classList.contains('pointer-events-none')).toBe(true);
+    expect(rules.classList.contains('opacity-40')).toBe(true);
+  });
+
+  it('should re-enable info links after being disabled (game over scenario)', () => {
+    // Simulate: links disabled during computer turn
+    renderInfoLinks(container, true);
+    const rulesBefore = container.querySelector('.info-link-rules');
+    expect(rulesBefore.classList.contains('pointer-events-none')).toBe(true);
+
+    // Simulate: game ends, links re-enabled (isGameActive=false means isDisabled=false)
+    renderInfoLinks(container, false);
+    const rulesAfter = container.querySelector('.info-link-rules');
+    expect(rulesAfter.classList.contains('pointer-events-none')).toBe(false);
+    expect(rulesAfter.classList.contains('opacity-40')).toBe(false);
   });
 });

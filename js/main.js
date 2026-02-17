@@ -141,7 +141,7 @@ function renderGameView() {
   setupBoardClickHandlers(app, board, HUMAN, onHumanMove);
   showStatusMessage(app, currentPlayer === HUMAN ? 'Your move' : 'Computer is thinking...');
   renderStats(app, stats);
-  renderInfoLinks(app, currentPlayer === COMPUTER);
+  renderInfoLinks(app, isGameActive && currentPlayer === COMPUTER);
 }
 
 async function onHumanMove(move) {
